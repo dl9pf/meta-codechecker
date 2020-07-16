@@ -11,6 +11,9 @@ DEPENDS += "codechecker-native"
 
 EXTRANATIVEPATH += "python3-native"
 
+inherit codechecker
+CODECHECKER_ENABLED = "1"
+
 do_compile() {
     ${CC} -w simple-hello-world.c ${CFLAGS} ${LDFLAGS} -o simple-hello-world
 }

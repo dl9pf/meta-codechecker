@@ -1,0 +1,91 @@
+From ecb5b2b07236761115b85db2729d3d2db2961219 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jan-Simon=20M=C3=B6ller?= <jsmoeller@linuxfoundation.org>
+Date: Mon, 13 Jul 2020 17:33:59 +0000
+Subject: [PATCH] Use python3 for setuptool calls
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Jan-Simon Möller <jsmoeller@linuxfoundation.org>
+---
+ .../tools/merge_clang_extdef_mappings/Makefile     | 14 +++++++-------
+ analyzer/tools/statistics_collector/Makefile       | 14 +++++++-------
+ 2 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/analyzer/tools/merge_clang_extdef_mappings/Makefile b/analyzer/tools/merge_clang_extdef_mappings/Makefile
+index b6633c2a..76e3c7d7 100644
+--- a/analyzer/tools/merge_clang_extdef_mappings/Makefile
++++ b/analyzer/tools/merge_clang_extdef_mappings/Makefile
+@@ -37,25 +37,25 @@ include tests/Makefile
+ 
+ package:
+ 	# Install package in 'development mode'.
+-	python setup.py develop
++	python3 setup.py develop
+ 
+ build:
+-	python setup.py build --build-purelib $(MERGE_CLANG_EXTDEF_MAPS_DIR)
++	python3 setup.py build --build-purelib $(MERGE_CLANG_EXTDEF_MAPS_DIR)
+ 
+ dist:
+ 	# Create a source distribution.
+-	python setup.py sdist
++	python3 setup.py sdist
+ 
+ upload_test: dist
+ 	# Upload package to the TestPyPI repository.
+-	$(eval PKG_NAME := $(shell python setup.py --name))
+-	$(eval PKG_VERSION := $(shell python setup.py --version))
++	$(eval PKG_NAME := $(shell python3 setup.py --name))
++	$(eval PKG_VERSION := $(shell python3 setup.py --version))
+ 	twine upload -r testpypi dist/$(PKG_NAME)-$(PKG_VERSION).tar.gz
+ 
+ upload: dist
+ 	# Upload package to the PyPI repository.
+-	$(eval PKG_NAME := $(shell python setup.py --name))
+-	$(eval PKG_VERSION := $(shell python setup.py --version))
++	$(eval PKG_NAME := $(shell python3 setup.py --name))
++	$(eval PKG_VERSION := $(shell python3 setup.py --version))
+ 	twine upload -r pypi dist/$(PKG_NAME)-$(PKG_VERSION).tar.gz
+ 
+ clean:
+diff --git a/analyzer/tools/statistics_collector/Makefile b/analyzer/tools/statistics_collector/Makefile
+index fd697466..ebe2263e 100644
+--- a/analyzer/tools/statistics_collector/Makefile
++++ b/analyzer/tools/statistics_collector/Makefile
+@@ -37,25 +37,25 @@ include tests/Makefile
+ 
+ package:
+ 	# Install package in 'development mode'.
+-	python setup.py develop
++	python3 setup.py develop
+ 
+ build:
+-	python setup.py build --build-purelib $(STATISTICS_COLLECTOR_DIR)
++	python3 setup.py build --build-purelib $(STATISTICS_COLLECTOR_DIR)
+ 
+ dist:
+ 	# Create a source distribution.
+-	python setup.py sdist
++	python3 setup.py sdist
+ 
+ upload_test: dist
+ 	# Upload package to the TestPyPI repository.
+-	$(eval PKG_NAME := $(shell python setup.py --name))
+-	$(eval PKG_VERSION := $(shell python setup.py --version))
++	$(eval PKG_NAME := $(shell python3 setup.py --name))
++	$(eval PKG_VERSION := $(shell python3 setup.py --version))
+ 	twine upload -r testpypi dist/$(PKG_NAME)-$(PKG_VERSION).tar.gz
+ 
+ upload: dist
+ 	# Upload package to the PyPI repository.
+-	$(eval PKG_NAME := $(shell python setup.py --name))
+-	$(eval PKG_VERSION := $(shell python setup.py --version))
++	$(eval PKG_NAME := $(shell python3 setup.py --name))
++	$(eval PKG_VERSION := $(shell python3 setup.py --version))
+ 	twine upload -r pypi dist/$(PKG_NAME)-$(PKG_VERSION).tar.gz
+ 
+ clean:
+-- 
+2.26.2
+

@@ -22,8 +22,8 @@ python do_csprecompile () {
     SAVEDENV = os.environ.copy()
     os.environ["LD_PRELOAD"] = "" + d.getVar('RECIPE_SYSROOT_NATIVE') + "/usr/local/CodeChecker/ld_logger/lib/x86_64/ldlogger.so"
     os.environ["CC_LOGGER_GCC_LIKE"] = "gcc:g++:clang:clang++:cc:c++:ccache"
-    os.environ["CC_LOGGER_FILE"] = "" + d.getVar("DEPLOY_DIR_IMAGE") + "/CodeChecker/" + d.getVar("BPN") + "/codechecker-log.json"
-    os.makedirs("" + d.getVar("DEPLOY_DIR_IMAGE") + "/CodeChecker/" + d.getVar("BPN") , exist_ok=True)
+    os.environ["CC_LOGGER_FILE"] = "" + d.getVar("DEPLOY_DIR") + "/CodeChecker/" + d.getVar("PN") + "/codechecker-log.json"
+    os.makedirs("" + d.getVar("DEPLOY_DIR") + "/CodeChecker/" + d.getVar("PN") , exist_ok=True)
     #bb.warn(str(os.environ["LD_PRELOAD"]))
 }
 
@@ -31,6 +31,7 @@ python do_cspostcompile () {
     if d.getVar("CODECHECKER_ENABLED") == "1":
         os.environ["LD_PRELOAD"] = ""
         # or restore saved env
+        # optimization: remove empty files
 }
 
 
@@ -40,6 +41,8 @@ do_codecheckeranalyse() {
 
     if test x"${CODECHECKER_ENABLED}" == x"1"; then
 
+        # optimization - skip empty
+        #
         # need to teach proper PATHs for this run
         export PYTHON="${STAGING_BINDIR_NATIVE}/python3-native/python3"
         export PYTHONNOUSERSITE="1"
@@ -55,10 +58,13 @@ do_codecheckeranalyse() {
 
 }
 
+addtask codecheckeranalyse
 
 do_codecheckerreport() {
 
 if test x"${CODECHECKER_ENABLED}" == x"1"; then
+
+    # optimization - skip empty
 
     # need to teach proper PATHs for this run
     export PYTHON="${STAGING_BINDIR_NATIVE}/python3-native/python3"
@@ -97,3 +103,4 @@ if test x"${CODECHECKER_ENABLED}" == x"1"; then
 fi
 }
 
+addtask codecheckerreport

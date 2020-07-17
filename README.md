@@ -17,4 +17,4 @@ CODECHECKER_REPORT_HTML = "1"
 # (default: localhost:8001/Default)
 
 # output
-check tmp/deploy/images/CodeChecker/*
+check tmp/deploy/CodeChecker/*

@@ -11,7 +11,7 @@ python () {
             d.appendVarFlag("do_compile", 'postfuncs', " do_cspostcompile")
             d.appendVarFlag("do_compile", "postfuncs", " do_codecheckeranalyse")
             d.appendVarFlag("do_compile", "postfuncs", " do_codecheckerreport")
-            d.appendVarFlag("do_compile", 'depends', ' codechecker-native:do_populate_sysroot python3-codechecker-api-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot')
+            d.appendVarFlag("do_compile", 'depends', ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot python3-codechecker-api-native:do_populate_sysroot python3-codechecker-api-shared-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot')
 }
 
 SAVEDENV = ""

@@ -21,36 +21,19 @@ do_compile() {
 
 do_install(){
     mkdir -p ${D}/${exec_prefix}/local
-    cp -ard ${S}/build/CodeChecker ${D}/${exec_prefix}/local/
-    chown -R root:root ${D}/${exec_prefix}/local/
-    ls -alhR ${D}/${exec_prefix}
 
-#    # TODO: yes, copying is ugly
-#    mkdir -p ${D}/${bindir}
-#    cp -ard ${S}/build/CodeChecker/bin/* ${D}/${bindir}/
-#    
-#    mkdir ${D}/${exec_prefix}/cc_bin
-#    cp -ard ${S}/build/CodeChecker/cc_bin/* ${D}/${exec_prefix}/cc_bin/
-#
-#    mkdir ${D}/${exec_prefix}/config
-#    cp -ard ${S}/build/CodeChecker/config/* ${D}/${exec_prefix}/config/
-#
-#    mkdir ${D}/${exec_prefix}/ld_logger
-#    cp -ard ${S}/build/CodeChecker/ld_logger/* ${D}/${exec_prefix}/ld_logger/
-#
-#    ls -alhR ${D}/${exec_prefix}/ld_logger/
-#
-#    mkdir -p ${D}/${libdir}
-#    cp -ard ${S}/build/CodeChecker/lib/* ${D}/${libdir}
-#    
-#    ls -alhR ${D}
+    # cp is not perfect but works for this pile of files
+    cp -ard ${S}/build/CodeChecker ${D}/${exec_prefix}/local/
+
+    # fix user
+    chown -R root:root ${D}/${exec_prefix}/local/
 }
 
 FILES_${PN} += " ${exec_prefix}/local*"
 SYSROOT_DIRS += " ${exec_prefix}/local"
 SYSROOT_DIRS_NATIVE += " ${exec_prefix}/local"
 
-#RDEPENDS_${PN} += "clang-native python3-native"
 RDEPENDS_${PN}_class-native += "clang-native python3-native"
+RDEPENDS_${PN}_class-nativesdk += "nativesdk-clang nativesdk-python3"
 
-BBCLASSEXTEND += "native"
+BBCLASSEXTEND += "native nativesdk"

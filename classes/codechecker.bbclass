@@ -40,7 +40,7 @@ python do_cspostcompile () {
 
 do_codecheckeranalyse() {
 
-if test x"${CODECHECKER_ENABLED}" == x"1"; then
+if test x"${CODECHECKER_ENABLED}" = x"1"; then
     # optimization - skip empty
     #
     # need to teach proper PATHs for this run
@@ -62,7 +62,7 @@ addtask codecheckeranalyse
 
 do_codecheckerreport() {
 
-if test x"${CODECHECKER_ENABLED}" == x"1"; then
+if test x"${CODECHECKER_ENABLED}" = x"1"; then
 
     # optimization - skip empty
 
@@ -78,7 +78,7 @@ if test x"${CODECHECKER_ENABLED}" == x"1"; then
     export CC_REPORT_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-html/"
 
     if test -d ${CC_ANALYSE_OUT} ; then
-        if test x"${CODECHECKER_REPORT_HTML}" == x"1"; then
+        if test x"${CODECHECKER_REPORT_HTML}" = x"1"; then
             mkdir -p ${CC_REPORT_OUT}
             #usage: CodeChecker parse [-h] [-t {plist}] [-e {html,json,codeclimate}]
             #             [-o OUTPUT_PATH] [--suppress SUPPRESS]
@@ -90,8 +90,8 @@ if test x"${CODECHECKER_ENABLED}" == x"1"; then
             #             file/folder [file/folder ...]
             CodeChecker parse -e html --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_OUT}
         fi
-        if test x"${CODECHECKER_REPORT_STORE}" == x"1"; then
-            if test ! x"${CODECHECKER_REPORT_HOST}" == x""; then
+        if test x"${CODECHECKER_REPORT_STORE}" = x"1"; then
+            if test ! x"${CODECHECKER_REPORT_HOST}" = x""; then
                 #usage: CodeChecker store [-h] [-t {plist}] [-n NAME] [--tag TAG]
                 #             [--description DESCRIPTION]
                 #             [--trim-path-prefix [TRIM_PATH_PREFIX [TRIM_PATH_PREFIX ...]]]

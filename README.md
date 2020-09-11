@@ -34,6 +34,9 @@ To upload the results to the CodeScanner webserver (e.g. docker container) add:
 Note:  The URL of the product to store the results for, in the format of
 'http[s]://]host:port/Endpoint'. (default: localhost:8001/Default)
 
+Note: this was tested against the docker container
+  docker pull codechecker/codechecker-web:6.13.0
+
 ### output location
 
 The output will be in:

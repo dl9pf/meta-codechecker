@@ -16,7 +16,7 @@ To enable the layer within a single recipe, do add
     inherit codechecker
     CODECHECKER_ENABLED = "1"
  
- ### In conf/local.conf
+### In conf/local.conf
     INHERIT += "codechecker"
     CODECHECKER_ENABLED = "1"
 
@@ -33,6 +33,10 @@ To upload the results to the CodeScanner webserver (e.g. docker container) add:
 
 Note:  The URL of the product to store the results for, in the format of
 'http[s]://]host:port/Endpoint'. (default: localhost:8001/Default)
+
+To add arguments to the CodeChecker analyze command (see CodeChecker man), e.g.:
+
+    CODECHECKER_ANALYZE_ARGS = "-e sensitive"
 
 Note: this was tested against the docker container
   docker pull codechecker/codechecker-web:6.13.0

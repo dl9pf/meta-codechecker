@@ -1,29 +1,32 @@
 
 # meta-codechecker
 
-A Layer to support CodeChecker as a frontent to clang static analysis
-
+A Layer to support CodeChecker as a frontend to clang static analysis
 
 ## usage
 
 This layer exposes a bbclass and the recipes needed to support inclusion of the tooling.
 Note that meta-clang is a requirement.
 
-### In a recipe enable:
+### enable codechecker feature:
 
-To enable the layer within a single recipe, do add
+    In e.g. conf/local.conf
+    DISTRO_FEATURES_append += " codechecker"
+
+To enable the layer within a single recipe, add to the bitbake recipe
 
     inherit codechecker
-    CODECHECKER_ENABLED = "1"
- 
-### In conf/local.conf
-    INHERIT += "codechecker"
-    CODECHECKER_ENABLED = "1"
 
-### options:
+### globally enable codechecker for all packages
+
+    In e.g. conf/local.conf
+    INHERIT += "codechecker"
+
+### options
 
 To generate a static HTML site as report do add:
 
+    In e.g. conf/local.conf
     CODECHECKER_REPORT_HTML = "1"
 
 To upload the results to the CodeScanner webserver (e.g. docker container) add:
@@ -37,9 +40,6 @@ Note:  The URL of the product to store the results for, in the format of
 To add arguments to the CodeChecker analyze command (see CodeChecker man), e.g.:
 
     CODECHECKER_ANALYZE_ARGS = "-e sensitive"
-
-Note: this was tested against the docker container
-  docker pull codechecker/codechecker-web:6.13.0
 
 ### output location
 

@@ -5,12 +5,11 @@ LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=2e982d844baa4df1c80de75470e0c5cb"
 
 DEPENDS = "doxygen-native curl-native git-native nodejs-native python3-native"
 
-SRC_URI = " git://github.com/Ericsson/codechecker.git;protocol=https \
-            file://0001-Use-python3-for-setuptool-calls.patch "
+SRC_URI = "git://github.com/Ericsson/CodeChecker.git;branch=release-v6.15.1"
 
 #SRCREV = "${AUTOREV}"
-# last 6.32 api
-SRCREV = "f5defa9cb06c8ffdd68160bafa0d130c4b0f3951"
+#6.15.1
+SRCREV = "692e51ba4be08e97c4b07cc344edca082dc50f63"
 
 S = "${WORKDIR}/git"
 
@@ -37,6 +36,5 @@ SYSROOT_DIRS += " ${exec_prefix}/local"
 SYSROOT_DIRS_NATIVE += " ${exec_prefix}/local"
 
 RDEPENDS_${PN}_class-native += "clang-native python3-native"
-RDEPENDS_${PN}_class-nativesdk += "nativesdk-clang nativesdk-python3"
 
-BBCLASSEXTEND += "native nativesdk"
+BBCLASSEXTEND += "native"

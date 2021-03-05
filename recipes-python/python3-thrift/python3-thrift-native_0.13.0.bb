@@ -1,5 +1,5 @@
 # existing upstream recipe does not have a native version
-SUMMARY = "Recipie to embedded the Python PiP Package thrift"
+SUMMARY = "Recipe to embedded the Python PiP Package thrift"
 HOMEPAGE ="https://pypi.org/project/thrift"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=2ba8bcf874551cc47b1c430e18ec4163"

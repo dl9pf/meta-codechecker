@@ -9,8 +9,8 @@ SRC_URI = " git://github.com/Ericsson/codechecker.git;protocol=https \
             file://0001-Use-python3-for-setuptool-calls.patch "
 
 #SRCREV = "${AUTOREV}"
-# last 6.32 api
-SRCREV = "f5defa9cb06c8ffdd68160bafa0d130c4b0f3951"
+# 6.39 api
+SRCREV = "63740679d61ff715175b9f31858d2fe9767efa41"
 
 S = "${WORKDIR}/git"
 

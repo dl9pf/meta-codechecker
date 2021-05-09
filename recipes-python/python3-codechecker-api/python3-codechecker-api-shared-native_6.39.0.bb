@@ -13,4 +13,7 @@ PYPI_PACKAGE = "codechecker_api_shared"
 #SRC_URI[sha256sum] = "1d196b7e7088e7ca656cceced4dba8add97eb6cd1be8c7a8eb637441d4b6818c"
 
 # 6.32
-SRC_URI[sha256sum] = "51e526a155e9a6fa765dd5eb6683e0b77ac0ef4caf098be27633e63070995d01"
+#SRC_URI[sha256sum] = "51e526a155e9a6fa765dd5eb6683e0b77ac0ef4caf098be27633e63070995d01"
+
+# 6.39
+SRC_URI[sha256sum] = "65bee7da8fbffba61174cc4ccef76babcc9e6585ebdd4866da4a13d85834de25"

@@ -1,12 +1,16 @@
 inherit python3-dir
 
+CODECHECKER_EXCLUDED_PACKAGES ??= "libgcc-initial glibc gcc-runtime smack"
+CODECHECKER_REPORT_ENDPOINT ??= "Default"
+
 python () {
     if d.getVar("CODECHECKER_ENABLED") == "1":
         if not bb.data.inherits_class('nativesdk', d) \
             and not bb.data.inherits_class('native', d) \
             and not bb.data.inherits_class('cross', d) \
             and not bb.data.inherits_class('crosssdk', d) \
-            and not bb.data.inherits_class('allarch', d):
+            and not bb.data.inherits_class('allarch', d) \
+            and not d.getVar('PN', True) in d.getVar('CODECHECKER_EXCLUDED_PACKAGES', True):
             d.prependVarFlag("do_compile", 'prefuncs', "do_csprecompile ")
             d.appendVarFlag("do_compile", 'postfuncs', " do_cspostcompile")
             d.appendVarFlag("do_compile", "postfuncs", " do_codecheckeranalyse")
@@ -53,7 +57,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export CC_LOGGER_FILE="${DEPLOY_DIR}/CodeChecker/${PN}/codechecker-log.json"
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
     if test -f ${CC_LOGGER_FILE} ; then
-        CodeChecker analyze ${PARALLEL_MAKE} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE}
+        CodeChecker analyze ${PARALLEL_MAKE} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
     fi
 fi
 }
@@ -90,8 +94,22 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
             #             file/folder [file/folder ...]
             CodeChecker parse -e html --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_OUT}
         fi
+        
         if test x"${CODECHECKER_REPORT_STORE}" = x"1"; then
             if test ! x"${CODECHECKER_REPORT_HOST}" = x""; then
+                echo "xxx ${CODECHECKER_REPORT_ENDPOINT_CREATE} xxxx"
+                if test x${CODECHECKER_REPORT_ENDPOINT_CREATE} = x"1" ; then
+                    echo 1
+                    ENDPOINT_LIST=`mktemp`
+                    CodeChecker cmd products list -o plaintext --url ${CODECHECKER_REPORT_HOST} > ${ENDPOINT_LIST}
+                    echo 2
+                    if ! grep -q ${CODECHECKER_REPORT_ENDPOINT} ${ENDPOINT_LIST} ; then
+                        # endpoint not there, create
+                        # sqlite only for now
+                        CodeChecker cmd products add --verbose debug --url ${CODECHECKER_REPORT_HOST} -n ${CODECHECKER_REPORT_ENDPOINT} ${CODECHECKER_REPORT_ENDPOINT}
+                    fi
+                    rm -f ${ENDPOINT_LIST}
+                fi
                 #usage: CodeChecker store [-h] [-t {plist}] [-n NAME] [--tag TAG]
                 #             [--description DESCRIPTION]
                 #             [--trim-path-prefix [TRIM_PATH_PREFIX [TRIM_PATH_PREFIX ...]]]
@@ -99,7 +117,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
                 #             [--verbose {info,debug,debug_analyzer}]
                 #             [file/folder [file/folder ...]]
                 # Todo: credentials
-                CodeChecker store -n ${PF} --trim-path-prefix=${S} --url ${CODECHECKER_REPORT_HOST} ${CC_ANALYSE_OUT}
+                CodeChecker store -n ${PF} --trim-path-prefix=${S} --url ${CODECHECKER_REPORT_HOST}${CODECHECKER_REPORT_ENDPOINT} ${CC_ANALYSE_OUT}
             fi
         fi
     fi

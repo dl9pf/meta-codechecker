@@ -26,16 +26,23 @@ To generate a static HTML site as report do add:
 
     CODECHECKER_REPORT_HTML = "1"
 
-To upload the results to the CodeScanner webserver (e.g. docker container) add:
+The output will be in tmp/deploy/CodeChecker/*
 
-    CODECHECKER_REPORT_STORE = "1" 
-    CODECHECKER_REPORT_HOST = "http[s]://]host:port/Endpoint" 
+To upload the results to the CodeChecker webserver (e.g. docker container) add:
+
+    CODECHECKER_REPORT_STORE = "1"
+    CODECHECKER_REPORT_HOST = "http://yourcodecheckerhost:8001/"
+    CODECHECKER_REPORT_ENDPOINT = "myproductname"
+    # ENDPOINT cannot have '.' or '+' or ' '  in the name !
+    #
+    # optionally have the endpoint created
+    #CODECHECKER_REPORT_ENDPOINT_CREATE = "1"
 
 Note:  The URL of the product to store the results for, in the format of
-'http[s]://]host:port/Endpoint'. (default: localhost:8001/Default)
+'http[s]://]host:port/'. (default: localhost:8001/Default)
 
 Note: this was tested against the docker container
-  docker pull codechecker/codechecker-web:6.13.0
+  docker pull codechecker/codechecker-web:6.15.2
 
 ### output location
 

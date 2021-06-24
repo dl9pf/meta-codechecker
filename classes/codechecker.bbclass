@@ -12,11 +12,35 @@ python () {
             and not bb.data.inherits_class('crosssdk', d) \
             and not bb.data.inherits_class('allarch', d) \
             and not d.getVar('PN', True) in d.getVar('CODECHECKER_EXCLUDED_PACKAGES', True):
-            d.prependVarFlag("do_compile", 'prefuncs', "do_csprecompile ")
-            d.appendVarFlag("do_compile", 'postfuncs', " do_cspostcompile")
-            bb.build.addtask("codecheckeranalyse", "do_build", "do_compile", d)
+
+            # By default we use the compile step to generate compile_commands.json
+            codechecker_use_compile_commands_json_from_configure = False
+
+            # For supported build systems the compile_commands.json can be generated during config
+            # CMake can generate the compile_commands.json if CMAKE_EXPORT_COMPILE_COMMANDS=ON
+            if bb.data.inherits_class('cmake', d):
+                d.appendVar("EXTRA_OECMAKE", " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON")
+                codechecker_use_compile_commands_json_from_configure = True
+
+            # Meson generates the compile_commands.json by default
+            if bb.data.inherits_class('meson', d):
+                codechecker_use_compile_commands_json_from_configure = True
+
+            codechecker_deps = ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot python3-codechecker-api-native:do_populate_sysroot python3-codechecker-api-shared-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot'
+            codecheckeranalyse_after = None
+
+            if codechecker_use_compile_commands_json_from_configure:
+                codecheckeranalyse_after = "do_configure"
+            else:
+                d.prependVarFlag("do_compile", "prefuncs", "do_csprecompile ")
+                d.appendVarFlag("do_compile", "postfuncs", " do_cspostcompile")
+                d.appendVarFlag("do_compile", "depends", codechecker_deps)
+                codecheckeranalyse_after = "do_compile"
+
+            bb.build.addtask("codecheckeranalyse", "do_build", codecheckeranalyse_after, d)
+            d.appendVarFlag("do_codecheckeranalyse", "depends", codechecker_deps)
             bb.build.addtask("codecheckerreport", "do_build", "do_codecheckeranalyse", d)
-            d.appendVarFlag("do_compile", 'depends', ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot python3-codechecker-api-native:do_populate_sysroot python3-codechecker-api-shared-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot')
+            d.appendVarFlag("do_codecheckerreport", "depends", codechecker_deps)
 }
 
 SAVEDENV = ""

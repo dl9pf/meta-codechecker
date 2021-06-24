@@ -27,7 +27,7 @@ python do_csprecompile () {
     SAVEDENV = os.environ.copy()
     os.environ["LD_PRELOAD"] = "" + d.getVar('RECIPE_SYSROOT_NATIVE') + "/usr/local/CodeChecker/ld_logger/lib/x86_64/ldlogger.so"
     os.environ["CC_LOGGER_GCC_LIKE"] = "gcc:g++:clang:clang++:cc:c++:ccache"
-    os.environ["CC_LOGGER_FILE"] = "" + d.getVar("DEPLOY_DIR") + "/CodeChecker/" + d.getVar("PN") + "/codechecker-log.json"
+    os.environ["CC_LOGGER_FILE"] = "" + d.getVar("B") + "/compile_commands.json"
     #os.environ["PARALLEL_MAKE"] = "" + d.getVar("PARALLEL_MAKE")
     os.makedirs("" + d.getVar("DEPLOY_DIR") + "/CodeChecker/" + d.getVar("PN") , exist_ok=True)
     #bb.warn(str(os.environ["LD_PRELOAD"]))
@@ -55,7 +55,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:${RECIPE_SYSROOT_NATIVE}/usr/local/CodeChecker/bin:$PATH"
 
     # expose Variable for CodeChecker
-    export CC_LOGGER_FILE="${DEPLOY_DIR}/CodeChecker/${PN}/codechecker-log.json"
+    export CC_LOGGER_FILE="${B}/compile_commands.json"
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
     if test -f ${CC_LOGGER_FILE} ; then
         CodeChecker analyze ${PARALLEL_MAKE} ${CODECHECKER_ANALYZE_EXTRA_ARGS} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
@@ -78,7 +78,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:${RECIPE_SYSROOT_NATIVE}/usr/local/CodeChecker/bin:$PATH"
 
     # expose variables for CodeChecker
-    export CC_LOGGER_FILE="${DEPLOY_DIR}/CodeChecker/${PN}/codechecker-log.json"
+    export CC_LOGGER_FILE="${B}/compile_commands.json"
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
     export CC_REPORT_HTML_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-html/"
     export CC_REPORT_CODECLIMATE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-codeclimate/"

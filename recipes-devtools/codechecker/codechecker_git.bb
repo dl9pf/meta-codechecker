@@ -31,6 +31,11 @@ SRC_URI[codemirror.LICENSE.sha256sum] = "a3f2fe2ac6b471aa80c737c5d283dd049bdc903
 SRC_URI[clike.min.js.md5sum] = "f6ea81338366ce679c731b3013ca7848"
 SRC_URI[clike.min.js.sha256sum] = "9496e66bbb82bbad38b281a98f92c93b84710cc5948a07b569f179bdea19c73e"
 
+# By default, the makefile call npm install to build the webserver ui
+# For offline build, the build_ui_dist feature must be disabled.
+PACKAGECONFIG ??= ""
+PACKAGECONFIG[build_ui_dist] = "BUILD_UI_DIST=YES,BUILD_UI_DIST=NO"
+
 #SRCREV = "${AUTOREV}"
 # v6.15.2 & api 6.39
 SRCREV = "63740679d61ff715175b9f31858d2fe9767efa41"
@@ -52,7 +57,7 @@ do_compile() {
     
     alias python=python3
     cd ${S}
-    BUILD_LOGGER_64_BIT_ONLY=YES make package
+    BUILD_LOGGER_64_BIT_ONLY=YES ${PACKAGECONFIG_CONFARGS} make package
 }
 
 do_install(){

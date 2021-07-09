@@ -10,7 +10,9 @@ DEPENDS = "doxygen-native curl-native git-native nodejs-native python3-native"
 CODEMIRROR_VERSION = "5.30.0"
 CODEMIRROR_BASE_URL = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/${CODEMIRROR_VERSION}"
 
+
 SRC_URI = " git://github.com/Ericsson/codechecker.git;protocol=https;branch=release-v6.15.2 \
+            file://0002-Add-severity-to-CodeClimate-export.patch \
             ${CODEMIRROR_BASE_URL}/codemirror.min.js;name=codemirror.min.js;downloadfilename=codemirror.min.js.${CODEMIRROR_VERSION} \
             ${CODEMIRROR_BASE_URL}/codemirror.min.css;name=codemirror.min.css;downloadfilename=codemirror.min.css.${CODEMIRROR_VERSION} \
             https://raw.githubusercontent.com/codemirror/CodeMirror/${CODEMIRROR_VERSION}/LICENSE;name=codemirror.LICENSE;downloadfilename=codemirror.LICENSE.${CODEMIRROR_VERSION} \

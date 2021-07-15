@@ -15,7 +15,7 @@ To enable the layer within a single recipe, do add
 
     inherit codechecker
     CODECHECKER_ENABLED = "1"
- 
+
  ### In conf/local.conf
     INHERIT += "codechecker"
     CODECHECKER_ENABLED = "1"
@@ -25,6 +25,10 @@ To enable the layer within a single recipe, do add
 To generate a static HTML site as report do add:
 
     CODECHECKER_REPORT_HTML = "1"
+
+To generate a codeclimate compatible report do add:
+
+    CODECHECKER_REPORT_CODECLIMATE = "1"
 
 The output will be in tmp/deploy/CodeChecker/*
 

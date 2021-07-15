@@ -76,14 +76,15 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export PYTHONPATH="${RECIPE_SYSROOT_NATIVE}/usr/lib/python${PYTHON_BASEVERSION}/site-packages/"
     export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:${RECIPE_SYSROOT_NATIVE}/usr/local/CodeChecker/bin:$PATH"
 
-    # expose variables for CodeChecker 
+    # expose variables for CodeChecker
     export CC_LOGGER_FILE="${DEPLOY_DIR}/CodeChecker/${PN}/codechecker-log.json"
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
-    export CC_REPORT_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-html/"
+    export CC_REPORT_HTML_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-html/"
+    export CC_REPORT_CODECLIMATE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-codeclimate/"
 
     if test -d ${CC_ANALYSE_OUT} ; then
         if test x"${CODECHECKER_REPORT_HTML}" = x"1"; then
-            mkdir -p ${CC_REPORT_OUT}
+            mkdir -p ${CC_REPORT_HTML_OUT}
             #usage: CodeChecker parse [-h] [-t {plist}] [-e {html,json,codeclimate}]
             #             [-o OUTPUT_PATH] [--suppress SUPPRESS]
             #             [--export-source-suppress] [--print-steps]
@@ -92,9 +93,22 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
             #             [--review-status [REVIEW_STATUS [REVIEW_STATUS ...]]]
             #             [--verbose {info,debug,debug_analyzer}]
             #             file/folder [file/folder ...]
-            CodeChecker parse -e html --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_OUT}
+            CodeChecker parse -e html --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_HTML_OUT}
         fi
-        
+
+        if test x"${CODECHECKER_REPORT_CODECLIMATE}" = x"1"; then
+            mkdir -p ${CC_REPORT_CODECLIMATE_OUT}
+            #usage: CodeChecker parse [-h] [-t {plist}] [-e {html,json,codeclimate}]
+            #             [-o OUTPUT_PATH] [--suppress SUPPRESS]
+            #             [--export-source-suppress] [--print-steps]
+            #             [-i SKIPFILE]
+            #             [--trim-path-prefix [TRIM_PATH_PREFIX [TRIM_PATH_PREFIX ...]]]
+            #             [--review-status [REVIEW_STATUS [REVIEW_STATUS ...]]]
+            #             [--verbose {info,debug,debug_analyzer}]
+            #             file/folder [file/folder ...]
+            CodeChecker parse -e codeclimate --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_CODECLIMATE_OUT}
+        fi
+
         if test x"${CODECHECKER_REPORT_STORE}" = x"1"; then
             if test ! x"${CODECHECKER_REPORT_HOST}" = x""; then
                 echo "xxx ${CODECHECKER_REPORT_ENDPOINT_CREATE} xxxx"

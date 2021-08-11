@@ -18,9 +18,6 @@ SRC_URI = " git://github.com/Ericsson/codechecker.git;protocol=https;branch=rele
             https://raw.githubusercontent.com/codemirror/CodeMirror/${CODEMIRROR_VERSION}/LICENSE;name=codemirror.LICENSE;downloadfilename=codemirror.LICENSE.${CODEMIRROR_VERSION} \
             ${CODEMIRROR_BASE_URL}/mode/clike/clike.min.js;name=clike.min.js;downloadfilename=codemirror.clike.min.js.${CODEMIRROR_VERSION}"
 
-# \
-#            file://0001-Use-python3-for-setuptool-calls.patch "
-
 SRC_URI[codemirror.min.js.md5sum] = "6f1c7c549c8ed350268aad9332ffcba1"
 SRC_URI[codemirror.min.js.sha256sum] = "02a9ccc1cf4a93ab094a10e8e501b0bb611af4ccd247e8925b2e27255fa04515"
 
@@ -56,7 +53,7 @@ do_compile() {
     ln -sf ${WORKDIR}/codemirror.min.css.${CODEMIRROR_VERSION} ${CODEMIRROR_DIR}/codemirror.min.css
     ln -sf ${WORKDIR}/codemirror.LICENSE.${CODEMIRROR_VERSION} ${CODEMIRROR_DIR}/codemirror.LICENSE
     ln -sf ${WORKDIR}/codemirror.clike.min.js.${CODEMIRROR_VERSION} ${CODEMIRROR_DIR}/clike.min.js
-    
+
     alias python=python3
     cd ${S}
     BUILD_LOGGER_64_BIT_ONLY=YES ${PACKAGECONFIG_CONFARGS} make package

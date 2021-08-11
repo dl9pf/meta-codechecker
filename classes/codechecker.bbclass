@@ -2,6 +2,7 @@ inherit python3-dir
 
 CODECHECKER_EXCLUDED_PACKAGES ??= "libgcc-initial glibc gcc-runtime smack"
 CODECHECKER_REPORT_ENDPOINT ??= "Default"
+CODECHECKER_ANALYZE_EXTRA_ARGS ??= ""
 
 python () {
     if d.getVar("CODECHECKER_ENABLED") == "1":
@@ -13,8 +14,8 @@ python () {
             and not d.getVar('PN', True) in d.getVar('CODECHECKER_EXCLUDED_PACKAGES', True):
             d.prependVarFlag("do_compile", 'prefuncs', "do_csprecompile ")
             d.appendVarFlag("do_compile", 'postfuncs', " do_cspostcompile")
-            d.appendVarFlag("do_compile", "postfuncs", " do_codecheckeranalyse")
-            d.appendVarFlag("do_compile", "postfuncs", " do_codecheckerreport")
+            bb.build.addtask("codecheckeranalyse", "do_build", "do_compile", d)
+            bb.build.addtask("codecheckerreport", "do_build", "do_codecheckeranalyse", d)
             d.appendVarFlag("do_compile", 'depends', ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot python3-codechecker-api-native:do_populate_sysroot python3-codechecker-api-shared-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot')
 }
 
@@ -57,7 +58,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export CC_LOGGER_FILE="${DEPLOY_DIR}/CodeChecker/${PN}/codechecker-log.json"
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
     if test -f ${CC_LOGGER_FILE} ; then
-        CodeChecker analyze ${PARALLEL_MAKE} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
+        CodeChecker analyze ${PARALLEL_MAKE} ${CODECHECKER_ANALYZE_EXTRA_ARGS} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
     fi
 fi
 }

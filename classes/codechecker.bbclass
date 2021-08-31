@@ -12,11 +12,35 @@ python () {
             and not bb.data.inherits_class('crosssdk', d) \
             and not bb.data.inherits_class('allarch', d) \
             and not d.getVar('PN', True) in d.getVar('CODECHECKER_EXCLUDED_PACKAGES', True):
-            d.prependVarFlag("do_compile", 'prefuncs', "do_csprecompile ")
-            d.appendVarFlag("do_compile", 'postfuncs', " do_cspostcompile")
-            bb.build.addtask("codecheckeranalyse", "do_build", "do_compile", d)
+
+            # By default we use the compile step to generate compile_commands.json
+            codechecker_use_compile_commands_json_from_configure = False
+
+            # For supported build systems the compile_commands.json can be generated during config
+            # CMake can generate the compile_commands.json if CMAKE_EXPORT_COMPILE_COMMANDS=ON
+            if bb.data.inherits_class('cmake', d):
+                d.appendVar("EXTRA_OECMAKE", " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON")
+                codechecker_use_compile_commands_json_from_configure = True
+
+            # Meson generates the compile_commands.json by default
+            if bb.data.inherits_class('meson', d):
+                codechecker_use_compile_commands_json_from_configure = True
+
+            codechecker_deps = ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot python3-codechecker-api-native:do_populate_sysroot python3-codechecker-api-shared-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot'
+            codecheckeranalyse_after = None
+
+            if codechecker_use_compile_commands_json_from_configure:
+                codecheckeranalyse_after = "do_configure"
+            else:
+                d.prependVarFlag("do_compile", "prefuncs", "do_csprecompile ")
+                d.appendVarFlag("do_compile", "postfuncs", " do_cspostcompile")
+                d.appendVarFlag("do_compile", "depends", codechecker_deps)
+                codecheckeranalyse_after = "do_compile"
+
+            bb.build.addtask("codecheckeranalyse", "do_build", codecheckeranalyse_after, d)
+            d.appendVarFlag("do_codecheckeranalyse", "depends", codechecker_deps)
             bb.build.addtask("codecheckerreport", "do_build", "do_codecheckeranalyse", d)
-            d.appendVarFlag("do_compile", 'depends', ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot python3-codechecker-api-native:do_populate_sysroot python3-codechecker-api-shared-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot')
+            d.appendVarFlag("do_codecheckerreport", "depends", codechecker_deps)
 }
 
 SAVEDENV = ""
@@ -27,7 +51,7 @@ python do_csprecompile () {
     SAVEDENV = os.environ.copy()
     os.environ["LD_PRELOAD"] = "" + d.getVar('RECIPE_SYSROOT_NATIVE') + "/usr/local/CodeChecker/ld_logger/lib/x86_64/ldlogger.so"
     os.environ["CC_LOGGER_GCC_LIKE"] = "gcc:g++:clang:clang++:cc:c++:ccache"
-    os.environ["CC_LOGGER_FILE"] = "" + d.getVar("DEPLOY_DIR") + "/CodeChecker/" + d.getVar("PN") + "/codechecker-log.json"
+    os.environ["CC_LOGGER_FILE"] = "" + d.getVar("B") + "/compile_commands.json"
     #os.environ["PARALLEL_MAKE"] = "" + d.getVar("PARALLEL_MAKE")
     os.makedirs("" + d.getVar("DEPLOY_DIR") + "/CodeChecker/" + d.getVar("PN") , exist_ok=True)
     #bb.warn(str(os.environ["LD_PRELOAD"]))
@@ -55,7 +79,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:${RECIPE_SYSROOT_NATIVE}/usr/local/CodeChecker/bin:$PATH"
 
     # expose Variable for CodeChecker
-    export CC_LOGGER_FILE="${DEPLOY_DIR}/CodeChecker/${PN}/codechecker-log.json"
+    export CC_LOGGER_FILE="${B}/compile_commands.json"
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
     if test -f ${CC_LOGGER_FILE} ; then
         CodeChecker analyze ${PARALLEL_MAKE} ${CODECHECKER_ANALYZE_EXTRA_ARGS} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
@@ -78,7 +102,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:${RECIPE_SYSROOT_NATIVE}/usr/local/CodeChecker/bin:$PATH"
 
     # expose variables for CodeChecker
-    export CC_LOGGER_FILE="${DEPLOY_DIR}/CodeChecker/${PN}/codechecker-log.json"
+    export CC_LOGGER_FILE="${B}/compile_commands.json"
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
     export CC_REPORT_HTML_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-html/"
     export CC_REPORT_CODECLIMATE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-codeclimate/"

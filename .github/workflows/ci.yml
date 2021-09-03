@@ -1,0 +1,70 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        include:
+          - oe-version-name: hardknott
+            oe-version: 3.3.2
+            oe-version-major-minor: 3.3
+
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get -y -qq install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+            build-essential chrpath socat cpio python3 python3-pip python3-pexpect \
+            xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev \
+            pylint3 xterm
+    - name: Install required layers
+      run: |
+        echo "Getting layer for Poky version: ${{ matrix.oe-version-name }}-${{ matrix.oe-version }}"
+        git clone --depth 1 -b "${{ matrix.oe-version-name }}-${{ matrix.oe-version }}" https://git.yoctoproject.org/git/poky
+        cd poky
+        git clone --depth 1 -b ${{ matrix.oe-version-name }} https://github.com/openembedded/meta-openembedded.git
+        git clone --depth 1 -b ${{ matrix.oe-version-name }} https://github.com/kraj/meta-clang.git
+    - uses: actions/checkout@v2
+      with:
+        path: 'poky/meta-codechecker'
+    # We can cache up to 5Go
+    # So we cache only sstate-cache and not the download directory
+    - name: Cache downloads
+      uses: actions/cache@v2
+      with:
+        path: |
+          poky/build/downloads
+        key: ${{ matrix.oe-version }}
+    - name: Run bitbake
+      run: |
+        cd poky
+        source oe-init-build-env
+        bitbake-layers add-layer ../meta-openembedded/meta-oe
+        bitbake-layers add-layer ../meta-openembedded/meta-python
+        bitbake-layers add-layer ../meta-clang
+        bitbake-layers add-layer ../meta-codechecker
+        echo "SSTATE_MIRRORS = \"\\" >> conf/auto.conf
+        echo "file://.* http://sstate.yoctoproject.org/${{ matrix.oe-version }}/PATH;downloadfilename=PATH \\n \\" >> conf/auto.conf
+        echo "file://.* http://sstate.yoctoproject.org/${{ matrix.oe-version-major-minor }}/PATH;downloadfilename=PATH \\n \\" >> conf/auto.conf
+        echo "\""  >> conf/auto.conf
+        cat conf/auto.conf
+        bitbake simple-helloworld
+    - name: Archive results
+      uses: actions/upload-artifact@v2
+      with:
+        name: codechecker-report
+        path: poky/build/tmp/deploy/CodeChecker
+        if-no-files-found: error
+    

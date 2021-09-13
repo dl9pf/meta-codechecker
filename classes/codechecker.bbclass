@@ -26,7 +26,7 @@ python () {
             if bb.data.inherits_class('meson', d):
                 codechecker_use_compile_commands_json_from_configure = True
 
-            codechecker_deps = ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot python3-codechecker-api-native:do_populate_sysroot python3-codechecker-api-shared-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot'
+            codechecker_deps = ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot'
             codecheckeranalyse_after = None
 
             if codechecker_use_compile_commands_json_from_configure:
@@ -49,7 +49,7 @@ SAVEDENV = ""
 
 python do_csprecompile () {
     SAVEDENV = os.environ.copy()
-    os.environ["LD_PRELOAD"] = "" + d.getVar('RECIPE_SYSROOT_NATIVE') + "/usr/local/CodeChecker/ld_logger/lib/x86_64/ldlogger.so"
+    os.environ["LD_PRELOAD"] = "" + d.getVar('RECIPE_SYSROOT_NATIVE') + "/usr/lib/python" + d.getVar('PYTHON_BASEVERSION') +"/site-packages/codechecker_analyzer/ld_logger/lib/ldlogger.so"
     os.environ["CC_LOGGER_GCC_LIKE"] = "gcc:g++:clang:clang++:cc:c++:ccache"
     os.environ["CC_LOGGER_FILE"] = "" + d.getVar("B") + "/compile_commands.json"
     #os.environ["PARALLEL_MAKE"] = "" + d.getVar("PARALLEL_MAKE")
@@ -76,7 +76,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export PYTHON="${STAGING_BINDIR_NATIVE}/python3-native/python3"
     export PYTHONNOUSERSITE="1"
     export PYTHONPATH="${RECIPE_SYSROOT_NATIVE}/usr/lib/python${PYTHON_BASEVERSION}/site-packages/"
-    export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:${RECIPE_SYSROOT_NATIVE}/usr/local/CodeChecker/bin:$PATH"
+    export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:$PATH"
 
     # expose Variable for CodeChecker
     export CC_LOGGER_FILE="${B}/compile_commands.json"
@@ -99,7 +99,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export PYTHON="${STAGING_BINDIR_NATIVE}/python3-native/python3"
     export PYTHONNOUSERSITE="1"
     export PYTHONPATH="${RECIPE_SYSROOT_NATIVE}/usr/lib/python${PYTHON_BASEVERSION}/site-packages/"
-    export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:${RECIPE_SYSROOT_NATIVE}/usr/local/CodeChecker/bin:$PATH"
+    export PATH="${RECIPE_SYSROOT_NATIVE}/usr/bin:${RECIPE_SYSROOT_NATIVE}/usr/bin/python3-native/:$PATH"
 
     # expose variables for CodeChecker
     export CC_LOGGER_FILE="${B}/compile_commands.json"
@@ -118,7 +118,11 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
             #             [--review-status [REVIEW_STATUS [REVIEW_STATUS ...]]]
             #             [--verbose {info,debug,debug_analyzer}]
             #             file/folder [file/folder ...]
-            CodeChecker parse -e html --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_HTML_OUT}
+            # Return Code:
+            # 0 - No report
+            # 1 - CodeChecker error
+            # 2 - At least one report emitted by an analyzer
+            CodeChecker parse -e html --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_HTML_OUT} || test $? -eq 2
         fi
 
         if test x"${CODECHECKER_REPORT_CODECLIMATE}" = x"1"; then
@@ -131,7 +135,11 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
             #             [--review-status [REVIEW_STATUS [REVIEW_STATUS ...]]]
             #             [--verbose {info,debug,debug_analyzer}]
             #             file/folder [file/folder ...]
-            CodeChecker parse -e codeclimate --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_CODECLIMATE_OUT}
+            # Return Code:
+            # 0 - No report
+            # 1 - CodeChecker error
+            # 2 - At least one report emitted by an analyzer
+            CodeChecker parse -e codeclimate --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_CODECLIMATE_OUT}/codeclimate.json || test $? -eq 2
         fi
 
         if test x"${CODECHECKER_REPORT_STORE}" = x"1"; then

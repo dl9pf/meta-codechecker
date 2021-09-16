@@ -12,6 +12,8 @@ PYPI_PACKAGE = "codechecker"
 
 inherit pypi distutils3-base
 
+SRC_URI += " file://0001-Don-t-require-fix-version-of-dependancies.patch"
+
 DEPENDS += "\
     ${PYTHON_PN}-pip-native \
 "
@@ -22,7 +24,7 @@ RDEPENDS_${PN} += "python3 python3-modules"
 RDEPENDS_${PN} += "python3-lxml python3-sqlalchemy python3-alembic python3-portalocker python3-psutil python3-mypy-extensions"
 
 # Requirements from analyzers/requirements.txt
-RDEPENDS_${PN} += "python3-pyyaml"
+RDEPENDS_${PN} += "python3-pyyaml python3-git"
 
 RDEPENDS_${PN}_class-native += " clang-native"
 RDEPENDS_${PN}_class-nativesdk += " nativesdk-clang"
@@ -40,7 +42,7 @@ do_install() {
       --no-index --no-deps \
       --prefix=${prefix} \
       --root=${D}
-        
+
     for i in ${D}${bindir}/* ${D}${sbindir}/*; do
         if [ -f "$i" ]; then
             sed -i -e s:${PYTHON}:${USRBINPATH}/env\ python3:g $i

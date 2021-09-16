@@ -26,7 +26,7 @@ python () {
             if bb.data.inherits_class('meson', d):
                 codechecker_use_compile_commands_json_from_configure = True
 
-            codechecker_deps = ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot'
+            codechecker_deps = ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot python3-git-native:do_populate_sysroot python3-alembic-native:do_populate_sysroot python3-sqlalchemy-native:do_populate_sysroot python3-mypy-extensions-native:do_populate_sysroot python3-lxml-native:do_populate_sysroot python3-markupsafe-native:do_populate_sysroot'
             codecheckeranalyse_after = None
 
             if codechecker_use_compile_commands_json_from_configure:
@@ -139,7 +139,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
             # 0 - No report
             # 1 - CodeChecker error
             # 2 - At least one report emitted by an analyzer
-            CodeChecker parse -e codeclimate --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_CODECLIMATE_OUT}/codeclimate.json || test $? -eq 2
+            CodeChecker parse -e codeclimate --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_CODECLIMATE_OUT}/reports.json || test $? -eq 2
         fi
 
         if test x"${CODECHECKER_REPORT_STORE}" = x"1"; then

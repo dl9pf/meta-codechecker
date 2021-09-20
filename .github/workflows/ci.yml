@@ -20,17 +20,26 @@ jobs:
     strategy:
       matrix:
         include:
+          - oe-version-name: dunfell
+            oe-version: 23.0.10
+          - oe-version-name: gatesgarth
+            oe-version: 24.0.4
           - oe-version-name: hardknott
             oe-version: 3.3.2
+      fail-fast: false
+
 
     steps:
     - name: Install required layers
       run: |
-        echo "Getting layer for Poky version: ${{ matrix.oe-version-name }}-${{ matrix.oe-version }}"
-        git clone --depth 1 -b "${{ matrix.oe-version-name }}-${{ matrix.oe-version }}" https://git.yoctoproject.org/git/poky
+        POKY_BRANCH="${{ matrix.oe-version-name }}-${{ matrix.oe-version }}"
+        OE_BRANCH="${{ matrix.oe-version-name }}"
+
+        echo "Getting layer for Poky version: ${POKY_BRANCH} / OE version: ${OE_BRANCH}"
+        git clone --depth 1 -b "${POKY_BRANCH}" https://git.yoctoproject.org/git/poky
         cd poky
-        git clone --depth 1 -b ${{ matrix.oe-version-name }} https://github.com/openembedded/meta-openembedded.git
-        git clone --depth 1 -b ${{ matrix.oe-version-name }} https://github.com/kraj/meta-clang.git
+        git clone --depth 1 -b ${OE_BRANCH} https://github.com/openembedded/meta-openembedded.git
+        git clone --depth 1 -b ${OE_BRANCH} https://github.com/kraj/meta-clang.git
 
     - uses: actions/checkout@v2
       with:
@@ -43,34 +52,43 @@ jobs:
       with:
         path: |
           poky/build/sstate-cache
-        key: ${{ matrix.oe-version }}
+        key: ${{ matrix.oe-version-name }}-${{ matrix.oe-version }}
     
     # Github Actions can't build "bitbake simple-helloworld" from scratch,
     # because job can only run for a maximum of 360 minutes. So if the sstate_cache
     # is missing, we prefetch one. See https://github.com/samdolt/meta-codechecker/wiki
     - name: Prefetch sstate if missing
       run: |
+        CACHE_VERSION="${{ matrix.oe-version-name }}-${{ matrix.oe-version }}"
+
         cd poky
         source $(pwd)/oe-init-build-env
         if [ ! -d "sstate-cache" ]; then
-          echo "Download sstate-cache from meta-codechecker-lfs-cache"
-          wget https://github.com/samdolt/meta-codechecker-lfs-cache/raw/main/sstate-cache_${{ matrix.oe-version }}.tar
-          tar -xf sstate-cache_${{ matrix.oe-version }}.tar
+          echo "Download sstate-cache from S3"
+          wget --no-verbose https://meta-codechecker-ci-cache.s3.amazonaws.com/sstate-cache_${CACHE_VERSION}.tar
+          tar -xf sstate-cache_${CACHE_VERSION}.tar
         fi
 
     - name: Run bitbake
       run: |
         cd poky
         source $(pwd)/oe-init-build-env
-        bitbake-layers add-layer ../meta-openembedded/meta-oe
-        bitbake-layers add-layer ../meta-openembedded/meta-python
-        bitbake-layers add-layer ../meta-clang
-        bitbake-layers add-layer ../meta-codechecker
-        bitbake simple-helloworld
+        bitbake-layers add-layer ../meta-openembedded/meta-oe | tee ~/bitbake.log
+        bitbake-layers add-layer ../meta-openembedded/meta-python | tee -a ~/bitbake.log
+        bitbake-layers add-layer ../meta-clang | tee -a ~/bitbake.log
+        bitbake-layers add-layer ../meta-codechecker | tee -a ~/bitbake.log
+        bitbake simple-helloworld | tee -a ~/bitbake.log
     - name: Archive results
       uses: actions/upload-artifact@v2
       with:
         name: codechecker-report
-        path: poky/build/tmp/deploy/CodeChecker
+        path: |
+          poky/build/tmp/deploy/CodeChecker
+          poky/build/*.log
         if-no-files-found: error
     
+    - name: Check artifacts
+      run: |
+        cd poky/build/tmp/deploy/CodeChecker
+        test -f "simple-helloworld/report-codeclimate/reports.json"
+        test -f "simple-helloworld/report-html/index.html"

@@ -1,0 +1,76 @@
+From ed1f0a985c8c0b81cabcedc9b93a8731c2544744 Mon Sep 17 00:00:00 2001
+From: Samuel Dolt <samuel.dolt.ext@siemens.com>
+Date: Thu, 16 Sep 2021 17:44:01 +0200
+Subject: [PATCH] Don't require fix version of dependancies
+
+---
+ analyzer/requirements.txt                      | 10 +++++-----
+ .../python3/codechecker.egg-info/requires.txt  | 18 +++++++++---------
+ web/requirements.txt                           | 16 ++++++++--------
+ 3 files changed, 22 insertions(+), 22 deletions(-)
+
+diff --git a/analyzer/requirements.txt b/analyzer/requirements.txt
+index de5d76c..37de81b 100644
+--- a/analyzer/requirements.txt
++++ b/analyzer/requirements.txt
+@@ -1,5 +1,5 @@
+-lxml==4.6.3
+-portalocker==2.2.1
+-psutil==5.8.0
+-PyYAML==5.4.1
+-mypy_extensions==0.4.3
++lxml
++portalocker
++psutil
++PyYAML
++mypy_extensions
+diff --git a/build_dist/CodeChecker/lib/python3/codechecker.egg-info/requires.txt b/build_dist/CodeChecker/lib/python3/codechecker.egg-info/requires.txt
+index 0bceb22..94c0a46 100644
+--- a/build_dist/CodeChecker/lib/python3/codechecker.egg-info/requires.txt
++++ b/build_dist/CodeChecker/lib/python3/codechecker.egg-info/requires.txt
+@@ -1,9 +1,9 @@
+-PyYAML==5.4.1
+-gitpython==3.1.11
+-mypy_extensions==0.4.3
+-sqlalchemy==1.3.23
+-portalocker==2.2.1
+-alembic==1.5.5
+-lxml==4.6.3
+-thrift==0.13.0
+-psutil==5.8.0
++PyYAML
++gitpython
++mypy_extensions
++sqlalchemy
++portalocker
++alembic
++lxml
++thrift
++psutil
+diff --git a/web/requirements.txt b/web/requirements.txt
+index 961ec6c..24633ea 100644
+--- a/web/requirements.txt
++++ b/web/requirements.txt
+@@ -1,11 +1,11 @@
+-lxml==4.6.3
+-sqlalchemy==1.3.23
+-alembic==1.5.5
+-portalocker==2.2.1
+-psutil==5.8.0
+-mypy_extensions==0.4.3
+-thrift==0.13.0
+-gitpython==3.1.11
++lxml
++sqlalchemy
++alembic
++portalocker
++psutil
++mypy_extensions
++thrift
++gitpython
+ 
+ ./api/py/codechecker_api/dist/codechecker_api.tar.gz
+ ./api/py/codechecker_api_shared/dist/codechecker_api_shared.tar.gz
+-- 
+2.20.1
+

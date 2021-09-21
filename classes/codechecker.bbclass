@@ -87,8 +87,6 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
 fi
 }
 
-addtask codecheckeranalyse
-
 do_codecheckerreport() {
 
 if test x"${CODECHECKER_ENABLED}" = x"1"; then
@@ -170,5 +168,3 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     fi
 fi
 }
-
-addtask codecheckerreport

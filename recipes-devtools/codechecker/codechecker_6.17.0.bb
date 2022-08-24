@@ -10,7 +10,7 @@ SRC_URI[sha256sum] = "1affc5fc6b21749050e36530868583c672852a448fd07bc7a221eb1d7d
 
 PYPI_PACKAGE = "codechecker"
 
-inherit pypi distutils3-base
+inherit pypi setuptools3-base
 
 SRC_URI += " file://0001-Don-t-require-fix-version-of-dependancies.patch"
 

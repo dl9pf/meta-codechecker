@@ -104,6 +104,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
     export CC_REPORT_HTML_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-html/"
     export CC_REPORT_CODECLIMATE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-codeclimate/"
+    export CC_REPORT_TXT_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/report-txt/"
 
     if test -d ${CC_ANALYSE_OUT} ; then
         if test x"${CODECHECKER_REPORT_HTML}" = x"1"; then
@@ -121,6 +122,11 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
             # 1 - CodeChecker error
             # 2 - At least one report emitted by an analyzer
             CodeChecker parse -e html --trim-path-prefix=${S} ${CC_ANALYSE_OUT} -o ${CC_REPORT_HTML_OUT} || test $? -eq 2
+        fi
+
+        if test x"${CODECHECKER_REPORT_TXT}" = x"1"; then
+            mkdir -p ${CC_REPORT_TXT_OUT}
+            CodeChecker parse --trim-path-prefix=${S} ${CC_ANALYSE_OUT} > ${CC_REPORT_TXT_OUT}/reports.txt || test $? -eq 2
         fi
 
         if test x"${CODECHECKER_REPORT_CODECLIMATE}" = x"1"; then

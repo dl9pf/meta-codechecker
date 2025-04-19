@@ -22,6 +22,10 @@ To enable the layer within a single recipe, do add
 
 ### options:
 
+To generate a TXT report compatible with warning-ng do add:
+
+    CODECHECKER_REPORT_TXT = "1"
+
 To generate a static HTML site as report do add:
 
     CODECHECKER_REPORT_HTML = "1"

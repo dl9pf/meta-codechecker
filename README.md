@@ -52,6 +52,12 @@ Note:  The URL of the product to store the results for, in the format of
 Note: this was tested against the docker container
   docker pull codechecker/codechecker-web:6.15.2
 
+To select different analyzer you can use:
+
+    CODECHECKER_ANALYZER = "clangsa clang-tidy"
+
+The default is only run clang-tidy
+
 ### output location
 
 The output will be in:

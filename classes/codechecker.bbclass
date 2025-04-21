@@ -3,6 +3,7 @@ inherit python3-dir
 CODECHECKER_EXCLUDED_PACKAGES ??= "libgcc-initial glibc gcc-runtime smack"
 CODECHECKER_REPORT_ENDPOINT ??= "Default"
 CODECHECKER_ANALYZE_EXTRA_ARGS ??= ""
+CODECHECKER_ANALYZER ??= "clang-tidy"
 
 python () {
     if d.getVar("CODECHECKER_ENABLED") == "1":
@@ -82,7 +83,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
     export CC_LOGGER_FILE="${B}/compile_commands.json"
     export CC_ANALYSE_OUT="${DEPLOY_DIR}/CodeChecker/${PN}/results/"
     if test -f ${CC_LOGGER_FILE} ; then
-        CodeChecker analyze ${PARALLEL_MAKE} --analyzers clang-tidy ${CODECHECKER_ANALYZE_EXTRA_ARGS} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
+        CodeChecker analyze ${PARALLEL_MAKE} --analyzers ${CODECHECKER_ANALYZER} ${CODECHECKER_ANALYZE_EXTRA_ARGS} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
     fi
 fi
 }

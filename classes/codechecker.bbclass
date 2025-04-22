@@ -26,7 +26,7 @@ python () {
             if bb.data.inherits_class('meson', d):
                 codechecker_use_compile_commands_json_from_configure = True
 
-            codechecker_deps = ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot python3-git-native:do_populate_sysroot python3-alembic-native:do_populate_sysroot python3-sqlalchemy-native:do_populate_sysroot python3-mypy-extensions-native:do_populate_sysroot python3-lxml-native:do_populate_sysroot python3-markupsafe-native:do_populate_sysroot'
+            codechecker_deps = ' codechecker-native:do_populate_sysroot python3-six-native:do_populate_sysroot python3-thrift-native:do_populate_sysroot clang-native:do_populate_sysroot python3-native:do_populate_sysroot python3-psutil-native:do_populate_sysroot python3-portalocker-native:do_populate_sysroot python3-pyyaml-native:do_populate_sysroot python3-git-native:do_populate_sysroot python3-alembic-native:do_populate_sysroot python3-sqlalchemy-native:do_populate_sysroot python3-mypy-extensions-native:do_populate_sysroot python3-lxml-native:do_populate_sysroot python3-markupsafe-native:do_populate_sysroot python3-multiprocess-native:do_populate_sysroot sarif-tools:do_populate_sysroot'
             codecheckeranalyse_after = None
 
             if codechecker_use_compile_commands_json_from_configure:
@@ -49,7 +49,7 @@ SAVEDENV = ""
 
 python do_csprecompile () {
     SAVEDENV = os.environ.copy()
-    os.environ["LD_PRELOAD"] = "" + d.getVar('RECIPE_SYSROOT_NATIVE') + "/usr/lib/python" + d.getVar('PYTHON_BASEVERSION') +"/site-packages/codechecker_analyzer/ld_logger/lib/ldlogger.so"
+    os.environ["LD_PRELOAD"] = "" + d.getVar('RECIPE_SYSROOT_NATIVE') + "/usr/lib/python" + d.getVar('PYTHON_BASEVERSION') +"/site-packages/codechecker_analyzer/ld_logger/lib/" + d.getVar('SDK_ARCH') + "/ldlogger.so"
     os.environ["CC_LOGGER_GCC_LIKE"] = "gcc:g++:clang:clang++:cc:c++:ccache"
     os.environ["CC_LOGGER_FILE"] = "" + d.getVar("B") + "/compile_commands.json"
     #os.environ["PARALLEL_MAKE"] = "" + d.getVar("PARALLEL_MAKE")

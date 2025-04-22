@@ -7,6 +7,8 @@ SRC_URI = "git://github.com/uqfoundation/multiprocess;protocol=https;branch=mast
 
 SRCREV = "2255a2837e08f30f4ab07b3cb73f0c7ed2973d5f"
 
+RDEPENDS:${PN} = "python3-dill"
+
 S = "${WORKDIR}/git"
 
 inherit setuptools3

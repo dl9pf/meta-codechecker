@@ -58,6 +58,10 @@ To select different analyzer you can use:
 
 The default is only run clang-tidy
 
+To add arguments to the CodeChecker analyze command (see CodeChecker man), e.g.:
+
+    CODECHECKER_ANALYZE_ARGS = "-e sensitive"
+
 ### output location
 
 The output will be in:

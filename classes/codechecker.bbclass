@@ -88,7 +88,7 @@ if test x"${CODECHECKER_ENABLED}" = x"1"; then
         echo "-*/${B}/*" > ${CC_SKIP_FILE}
     fi
     if test -f ${CC_LOGGER_FILE} ; then
-        CodeChecker analyze ${PARALLEL_MAKE} --analyzers ${CODECHECKER_ANALYZER} ${CODECHECKER_ANALYZE_EXTRA_ARGS} -i ${CC_SKIP_FILE} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
+        CodeChecker analyze ${PARALLEL_MAKE} ${CODECHECKER_ANALYZE_ARGS} --analyzers ${CODECHECKER_ANALYZER} ${CODECHECKER_ANALYZE_EXTRA_ARGS} -i ${CC_SKIP_FILE} -o ${CC_ANALYSE_OUT} --report-hash context-free-v2 ${CC_LOGGER_FILE} || true
     fi
 fi
 }
